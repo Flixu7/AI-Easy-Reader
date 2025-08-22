@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Text Simplifier</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --neon-blue: #00f3ff;
+      --neon-purple: #9d00ff;
+      --dark-bg: #0a0a0a;
+      --darker-bg: #050505;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--dark-bg);
+      color: #fff;
+      padding: 20px;
+      width: 300px;
+      margin: 0;
+      min-height: 350px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+      animation: borderGlow 2s linear infinite;
+    }
+
+    @keyframes borderGlow {
+      0% { opacity: 0.5; }
+      50% { opacity: 1; }
+      100% { opacity: 0.5; }
+    }
+
+    .container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      position: relative;
+      z-index: 1;
+    }
+
+    h3 {
+      margin: 0;
+      font-size: 24px;
+      background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .input-group label {
+      font-size: 14px;
+      color: #ccc;
+      font-weight: 600;
+    }
+
+    .select-wrapper {
+      position: relative;
+    }
+
+    select {
+      width: 100%;
+      padding: 12px;
+      background: var(--darker-bg);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #fff;
+      border-radius: 8px;
+      appearance: none;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.3s ease;
+    }
+
+    select:hover {
+      border-color: var(--neon-blue);
+      box-shadow: 0 0 15px rgba(0,243,255,0.2);
+    }
+
+    select:focus {
+      outline: none;
+      border-color: var(--neon-purple);
+      box-shadow: 0 0 20px rgba(157,0,255,0.3);
+    }
+
+    .select-wrapper::after {
+      content: '▼';
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--neon-blue);
+      pointer-events: none;
+      font-size: 12px;
+    }
+
+    .toggle-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: var(--darker-bg);
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .toggle-group label {
+      font-size: 14px;
+      color: #ccc;
+      cursor: pointer;
+      flex: 1;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 50px;
+      height: 24px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .toggle-switch.active {
+      background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      background: #fff;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .toggle-switch.active::after {
+      transform: translateX(26px);
+    }
+
+    button {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+      border: none;
+      border-radius: 8px;
+      color: #000;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0,243,255,0.3);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .status {
+      padding: 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      text-align: center;
+      margin-top: 10px;
+    }
+
+    .status.success {
+      background: rgba(0,255,0,0.1);
+      color: #00ff00;
+      border: 1px solid rgba(0,255,0,0.3);
+    }
+
+    .status.error {
+      background: rgba(255,0,0,0.1);
+      color: #ff4444;
+      border: 1px solid rgba(255,0,0,0.3);
+    }
+
+    .status.info {
+      background: rgba(0,243,255,0.1);
+      color: var(--neon-blue);
+      border: 1px solid rgba(0,243,255,0.3);
+    }
+
+    .loading {
+      display: none;
+      text-align: center;
+      color: var(--neon-blue);
+    }
+
+    .loading.show {
+      display: block;
+    }
+
+    .spinner {
+      display: inline-block;
+      width: 20px;
+      height: 20px;
+      border: 2px solid rgba(0,243,255,0.3);
+      border-radius: 50%;
+      border-top-color: var(--neon-blue);
+      animation: spin 1s ease-in-out infinite;
+      margin-right: 8px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .info-text {
+      font-size: 12px;
+      color: #888;
+      text-align: center;
+      line-height: 1.4;
+      margin-top: 10px;
+    }
+
+    .optimization-badge {
+      background: linear-gradient(90deg, #00ff88, #00ccff);
+      color: #000;
+      padding: 4px 8px;
+      border-radius: 12px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h3>Text Simplifier</h3>
+    
+    <div class="input-group">
+      <label for="level">Simplification Level:</label>
+      <div class="select-wrapper">
+        <select id="level">
+          <option value="A1">A1 - Beginner</option>
+          <option value="A2">A2 - Elementary</option>
+          <option value="B1">B1 - Intermediate</option>
+          <option value="B2">B2 - Upper Intermediate</option>
+          <option value="C1">C1 - Advanced</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="toggle-group">
+      <label for="showOriginal">Show original text</label>
+      <div class="toggle-switch" id="showOriginalToggle">
+        <input type="checkbox" id="showOriginal" style="display: none;" />
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label for="apiKey">API Key:</label>
+      <input type="password" id="apiKey" placeholder="sk-..." style="width: 100%; padding: 12px; background: var(--darker-bg); border: 1px solid rgba(255,255,255,0.1); color: #fff; border-radius: 8px; font-size: 14px;" />
+      <button id="saveApiKey" style="margin-top: 8px; padding: 8px; font-size: 12px;">Save API Key</button>
+    </div>
+
+    <button id="simplify">Simplify Text</button>
+    
+    <div class="loading" id="loading">
+      <div class="spinner"></div>
+      Processing text...
+    </div>
+
+    <div class="status" id="status" style="display: none;"></div>
+    
+    <div class="info-text">
+      Powered by OpenAI<br>
+      Develop by Maciej Dybała
+      <div class="optimization-badge">Token Optimized</div>
+      <div style="margin-top: 8px; font-size: 10px; color: #666;">
+        🔒 API Key stored securely in Chrome storage
+      </div>
+    </div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

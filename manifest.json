@@ -1,0 +1,47 @@
+{
+    "manifest_version": 3,
+    "name": "Text Simplifier",
+    "version": "1.0",
+    "description": "Simplifies English text on webpages using OpenAI gpt-5-nano.",
+    "icons": {
+    "16": "images/icon16.png",
+    "19": "images/icon19.png",
+    "32": "images/icon32.png",
+    "38": "images/icon38.png",
+    "48": "images/icon48.png",
+    "128": "images/icon128.png"
+  },
+    "permissions": [
+        "storage",
+        "activeTab",
+        "scripting",
+        "tabs"
+    ],
+    "host_permissions": [
+        "<all_urls>",
+        "https://api.openai.com/*"
+    ],
+    "action": {
+        "default_popup": "popup.html",
+        "default_title": "Text Simplifier",
+        "default_icon": {
+            "16": "images/icon16.png",
+            "19": "images/icon19.png",
+            "32": "images/icon32.png",
+            "38": "images/icon38.png",
+            "48": "images/icon48.png",
+            "128": "images/icon128.png"
+        }
+    },
+    "background": {
+        "service_worker": "background.js"
+    },
+    "content_scripts": [
+        {
+            "matches": ["<all_urls>"],
+            "js": ["contentScript.js"],
+            "run_at": "document_end"
+        }
+    ]
+}
+  
